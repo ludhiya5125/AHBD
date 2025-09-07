@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday Ajay</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: black;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Fireworks canvas (behind everything) */
+    #fireworks {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Heartbeat Birthday Title */
+    .birthday {
+      font-size: 60px;
+      font-weight: bold;
+      color: #fff;
+      text-align: center;
+      animation: heartbeat 1.5s infinite, glow 2s ease-in-out infinite alternate;
+      text-shadow: 0 0 20px #fff, 0 0 40px #ffcc00, 0 0 60px #ffcc00;
+      position: relative;
+      z-index: 20;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff, 0 0 20px #ffcc00; }
+      to { text-shadow: 0 0 20px #fff, 0 0 40px #ffcc00; }
+    }
+
+    /* Age Timer */
+    #ageTimer {
+      font-size: 20px;
+      color: #fff;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 6px rgba(255,255,255,0.6);
+      z-index: 20;
+    }
+
+    /* Gold Sparkles */
+    .sparkle {
+      position: absolute;
+      background: gold;
+      border-radius: 50%;
+      opacity: 0.9;
+      animation: sparkleFall linear infinite;
+      z-index: 5;
+    }
+
+    @keyframes sparkleFall {
+      to {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+
+    /* Falling Hearts */
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      color: red;
+      animation: heartFall linear infinite;
+      z-index: 5;
+      user-select: none;
+    }
+
+    @keyframes heartFall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Special Wishes Button */
+    .music-controls {
+      margin-top: 20px;
+      z-index: 20;
+    }
+
+    .music-btn {
+      padding: 18px 35px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ff4ecb, #e63db8);
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0px 5px 15px rgba(255, 78, 203, 0.4);
+      transition: all 0.3s ease;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .music-btn:hover {
+      background: linear-gradient(135deg, #e63db8, #d12a9f);
+      transform: scale(1.05);
+    }
+
+    .music-btn.active {
+      background: linear-gradient(135deg, #00ff88, #00cc6a);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(0, 255, 136, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+    }
+
+    /* Special Message Modal */
+    .message-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .message-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .message-box {
+      background: linear-gradient(135deg, #ff6b9d, #c44569, #f8b500, #feca57);
+      background-size: 300% 300%;
+      animation: gradientShift 4s ease infinite;
+      border-radius: 25px;
+      padding: 40px;
+      max-width: 550px;
+      width: 90%;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0px 15px 40px rgba(0,0,0,0.3);
+      border: 3px solid rgba(255,255,255,0.6);
+      transform: scale(0.7);
+      transition: transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .message-modal.show .message-box {
+      transform: scale(1);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .message-box h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .message-box p {
+      font-size: 18px;
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+
+  <h1 class="birthday">🎉 Happy Birthday Ajay 🎉</h1>
+  <div id="ageTimer">Loading age...</div>
+
+  <!-- Special Wishes Button -->
+  <div class="music-controls">
+    <button id="specialWishesBtn" class="music-btn">✨ Special Wishes ✨</button>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="bgm" loop preload="auto">
+    <source src="bdfinal.mp3" type="audio/mp3">
+  </audio>
+
+  <!-- Special Wishes Modal -->
+  <div id="messageModal" class="message-modal">
+    <div class="message-box">
+      <h2>🎊 Special Birthday Wishes 🎊</h2>
+      <p>🌟 <strong>Dear Ajay,</strong> 🌟</p>
+      <p>
+        From the professional connection to the bond of friendship,<br>
+        our journey has been filled with silly arguments for no reason,<br>
+        endless laughs, and countless hours of talking about nothing — yet everything.<br>
+        Such an amazing online journey, and I hope it blossoms into an offline meet soon... 💖
+      </p>
+      <p><strong>On this very special day, I wish you Many, Many more Happy Returns of the Day! 🥳</strong></p>
+      <p>
+        🌞 Be healthy like sunshine <br>
+        🌌 Achieve success as high as the sky <br>
+        😊 Always smile like a smiley emoji <br>
+        ✨ Keep shining like a star, always
+      </p>
+      <p><strong>Here's to celebrating YOU today and always! 🥳</strong></p>
+      <button class="close-btn" onclick="closeMessage()">Back to Celebration 🎉</button>
+    </div>
+  </div>
+
+  <script>
+      /* ========== Age Timer (Days, Hours, Minutes only) ========== */
+function updateAge() {
+  const birthDate = new Date("2001-09-24T00:00:00");
+  const now = new Date();
+  let diff = now - birthDate;
+
+  const msInDay = 1000 * 60 * 60 * 24;
+  const msInHour = 1000 * 60 * 60;
+  const msInMinute = 1000 * 60;
+  const msInSecond = 1000;
+
+
+  const days = Math.floor(diff / msInDay);
+  diff -= days * msInDay;
+
+  const hours = Math.floor(diff / msInHour);
+  diff -= hours * msInHour;
+
+  const minutes = Math.floor(diff / msInMinute);
+  diff -= minutes * msInMinute;
+const seconds = Math.floor(diff / msInSecond);
+
+
+  document.getElementById("ageTimer").textContent =
+    `It's been: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+}
+setInterval(updateAge, 1000);
+updateAge();
+
+    /* ========== Sparkles ========== */
+    function createSparkle() {
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+      sparkle.style.left = Math.random() * 100 + "vw";
+      const size = Math.random() * 4 + 2;
+      sparkle.style.width = sparkle.style.height = size + "px";
+      sparkle.style.animationDuration = (Math.random() * 3 + 2) + "s";
+      sparkle.style.opacity = Math.random() * 0.9 + 0.3;
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 5000);
+    }
+    setInterval(createSparkle, 200);
+
+    /* ========== Falling Hearts ========== */
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.textContent = "❤️";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = Math.random() * 20 + 15 + "px";
+      heart.style.animationDuration = (Math.random() * 4 + 3) + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 7000);
+    }
+    setInterval(createHeart, 500);
+
+    /* ========== Fireworks ========== */
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    class Firework {
+      constructor(x, y, colors) {
+        this.particles = [];
+        for (let i = 0; i < 60; i++) {
+          this.particles.push({
+            x, y,
+            angle: Math.random() * 2 * Math.PI,
+            speed: Math.random() * 6 + 2,
+            radius: Math.random() * 2 + 1,
+            life: 100,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+      }
+      update() {
+        this.particles.forEach(p => {
+          p.x += Math.cos(p.angle) * p.speed;
+          p.y += Math.sin(p.angle) * p.speed + 0.5; // small gravity
+          p.speed *= 0.96;
+          p.life -= 1;
+        });
+      }
+      draw(ctx) {
+        this.particles.forEach(p => {
+          if (p.life > 0) {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.fill();
+          }
+        });
+      }
+    }
+
+    let fireworks = [];
+    const colors = ["#ff0000","#ff9900","#ffff00","#00ff00","#00ffff","#0066ff","#cc00ff","#ff66b2","#ffffff"];
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        const fw = fireworks[i];
+        fw.update();
+        fw.draw(ctx);
+        fw.particles = fw.particles.filter(p => p.life > 0);
+        if (fw.particles.length === 0) fireworks.splice(i, 1);
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // Launch random fireworks in the top half
+    setInterval(() => {
+      fireworks.push(new Firework(
+        Math.random() * canvas.width,
+        Math.random() * canvas.height * 0.45,
+        colors
+      ));
+    }, 900);
+    animate();
+
+    /* ========== Special Wishes + Music ========== */
+    const audio = document.getElementById("bgm");
+    const specialWishesBtn = document.getElementById("specialWishesBtn");
+    const messageModal = document.getElementById("messageModal");
+
+    function showSpecialWishes() {
+      messageModal.classList.add("show");
+      audio.play().catch(err => console.log("Audio play error:", err));
+      specialWishesBtn.classList.add("active");
+      specialWishesBtn.innerHTML = "🎵 Special Wishes Playing";
+    }
+
+    function closeMessage() {
+      messageModal.classList.remove("show");
+      specialWishesBtn.innerHTML = "✨ Special Wishes ✨";
+      specialWishesBtn.classList.remove("active");
+    }
+
+    specialWishesBtn.addEventListener("click", showSpecialWishes);
+  </script>
+</body>
+</html>
